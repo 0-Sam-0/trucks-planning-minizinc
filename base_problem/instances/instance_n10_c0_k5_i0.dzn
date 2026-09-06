@@ -1,0 +1,61 @@
+% instance_n10_c0_k5_i0.dzn
+% Generated instance for the Trucks problem
+% N=10, h=3, k=5
+
+% Number of nodes
+N = 10;
+
+% Number of objects
+h = 3;
+
+% Maximum plan length
+%k = 5;
+
+% Adjacency matrix (0-based internal, will be converted to 1-based)
+Adj = [|0, 0, 1, 0, 0, 0, 1, 0, 0, 0
+      |0, 0, 1, 0, 0, 0, 0, 1, 0, 0
+      |1, 1, 0, 0, 1, 0, 0, 0, 1, 1
+      |0, 0, 0, 0, 1, 0, 1, 0, 0, 0
+      |0, 0, 1, 1, 0, 0, 0, 1, 0, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+      |1, 0, 0, 1, 0, 0, 0, 0, 0, 1
+      |0, 1, 0, 0, 1, 0, 0, 0, 0, 0
+      |0, 0, 1, 0, 0, 0, 0, 0, 0, 0
+      |0, 0, 1, 0, 0, 1, 1, 0, 0, 0
+      |];
+
+% Initial object distribution
+S_init = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0];
+
+% Target nodes (1 if target, 0 otherwise)
+T = [0, 0, 1, 0, 0, 0, 0, 0, 1, 1];
+
+% Initial truck position (1-based indexing)
+u = 3;
+
+% --- DEBUG TRACE ---
+% --- GENERATION TRACE (Backwards from Target) ---
+% Initial distribution (all on targets): [0, 0, 1, 0, 0, 0, 0, 0, 1, 1]
+% Step 1: Selected target node 3 (has 1 objects)
+% Step 1: Moved object 3 -> 5
+% Step 1: Distribution: [0, 0, 0, 0, 1, 0, 0, 0, 1, 1]
+% Step 2: Selected target node 9 (has 1 objects)
+% Step 2: Selected target node 10 (has 1 objects)
+% Step 2: Moved object 10 -> 6
+% Step 2: Distribution: [0, 0, 0, 0, 1, 1, 0, 0, 1, 0]
+% Step 3: Selected target node 9 (has 1 objects)
+% Step 3: Selected non-target node 5 (has 1 objects)
+% Step 3: Avoiding backtrack to node 3
+% Step 3: Moved object 5 -> 8
+% Step 3: Distribution: [0, 0, 0, 0, 0, 1, 0, 1, 1, 0]
+% Step 4: Selected target node 9 (has 1 objects)
+% Step 4: Selected non-target node 8 (has 1 objects)
+% Step 4: Avoiding backtrack to node 5
+% Step 4: Moved object 8 -> 2
+% Step 4: Distribution: [0, 1, 0, 0, 0, 1, 0, 0, 1, 0]
+% Step 5: Selected target node 9 (has 1 objects)
+% Step 5: Selected non-target node 6 (has 1 objects)
+% Step 5: Selected non-target node 2 (has 1 objects)
+% Step 5: Moved object 2 -> 8
+% Step 5: Distribution: [0, 0, 0, 0, 0, 1, 0, 1, 1, 0]
+% Truck starting position: 3

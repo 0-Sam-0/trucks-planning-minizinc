@@ -1,0 +1,60 @@
+% instance_n14_c3_k5_i35.dzn
+% Generated instance for the Trucks problem
+% N=14, h=3, k=5
+
+% Number of nodes
+N = 14;
+
+% Number of objects
+h = 3;
+
+% Maximum plan length
+%k = 5;
+
+% Adjacency matrix (0-based internal, will be converted to 1-based)
+Adj = [|0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0
+      |1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+      |0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+      |0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1
+      |0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0
+      |1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0
+      |1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0
+      |1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0
+      |0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |];
+
+% Initial object distribution
+S_init = [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1];
+
+% Target nodes (1 if target, 0 otherwise)
+T = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0];
+
+% Initial truck position (1-based indexing)
+u = 3;
+
+% --- DEBUG TRACE ---
+% --- GENERATION TRACE (Backwards from Target) ---
+% Initial distribution (all on targets): [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0]
+% Step 1: Selected target node 9 (has 1 objects)
+% Step 1: Moved object 9 -> 2
+% Step 1: Distribution: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
+% Step 2: Selected target node 12 (has 1 objects)
+% Step 2: Moved object 12 -> 3
+% Step 2: Distribution: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+% Step 3: Selected target node 13 (has 1 objects)
+% Step 3: Moved object 13 -> 5
+% Step 3: Distribution: [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+% Step 4: Selected non-target node 3 (has 1 objects)
+% Step 4: Avoiding backtrack to node 12
+% Step 4: Moved object 3 -> 10
+% Step 4: Distribution: [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+% Step 5: Selected non-target node 5 (has 1 objects)
+% Step 5: Avoiding backtrack to node 13
+% Step 5: Moved object 5 -> 14
+% Step 5: Distribution: [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+% Truck starting position: 3

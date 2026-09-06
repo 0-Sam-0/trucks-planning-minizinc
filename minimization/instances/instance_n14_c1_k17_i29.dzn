@@ -1,0 +1,139 @@
+% instance_n14_c1_k17_i29.dzn
+% Generated instance for the Trucks problem
+% N=14, h=3, k=17
+
+% Number of nodes
+N = 14;
+
+% Number of objects
+h = 3;
+
+% Maximum plan length
+%k = 17;
+
+% Adjacency matrix (0-based internal, will be converted to 1-based)
+Adj = [|0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0
+      |0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0
+      |0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+      |0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1
+      |1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+      |0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+      |0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1
+      |1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0
+      |0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0
+      |0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0
+      |];
+
+% Weights matrix (edge weights)
+% Weights = [|0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0
+%           |0, 0, 1, 0, 0, 0, 0, 0, 5, 3, 0, 0, 0, 0
+%           |0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+%           |0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0, 0, 1, 4
+%           |1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+%           |0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0
+%           |0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |0, 5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 0, 1
+%           |1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 4
+%           |0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0
+%           |0, 0, 0, 1, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0
+%           |0, 0, 2, 4, 0, 0, 0, 0, 0, 1, 4, 0, 0, 0
+%           |];
+
+% Distance matrix
+Dist = [|0, 7, 7, 4, 1, 5, 6, 7, 2, 5, 1, 10, 3, 5
+      |7, 0, 1, 7, 6, 8, 9, 10, 5, 3, 7, 8, 8, 3
+      |7, 1, 0, 6, 7, 7, 8, 9, 6, 3, 6, 8, 7, 2
+      |4, 7, 6, 0, 5, 1, 2, 3, 6, 5, 3, 10, 1, 4
+      |1, 6, 7, 5, 0, 6, 7, 8, 1, 6, 2, 11, 4, 6
+      |5, 8, 7, 1, 6, 0, 3, 4, 7, 6, 4, 11, 2, 5
+      |6, 9, 8, 2, 7, 3, 0, 5, 8, 7, 5, 12, 3, 6
+      |7, 10, 9, 3, 8, 4, 5, 0, 9, 8, 6, 13, 4, 7
+      |2, 5, 6, 6, 1, 7, 8, 9, 0, 7, 3, 12, 5, 7
+      |5, 3, 3, 5, 6, 6, 7, 8, 7, 0, 4, 5, 6, 1
+      |1, 7, 6, 3, 2, 4, 5, 6, 3, 4, 0, 9, 2, 4
+      |10, 8, 8, 10, 11, 11, 12, 13, 12, 5, 9, 0, 11, 6
+      |3, 8, 7, 1, 4, 2, 3, 4, 5, 6, 2, 11, 0, 5
+      |5, 3, 2, 4, 6, 5, 6, 7, 7, 1, 4, 6, 5, 0
+      |];
+
+% Initial object distribution
+S_init = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1];
+
+% Target nodes (1 if target, 0 otherwise)
+T = [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0];
+
+% Initial truck position (1-based indexing)
+u = 11;
+
+% --- DEBUG TRACE ---
+% --- GENERATION TRACE (Backwards from Target) ---
+% Initial distribution (all on targets): [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0]
+% Step 1: Selected target node 3 (has 1 objects)
+% Step 1: Moved object 3 -> 14
+% Step 1: Distribution: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1]
+% Step 2: Selected target node 13 (has 1 objects)
+% Step 2: Moved object 13 -> 4
+% Step 2: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+% Step 3: Selected target node 9 (has 1 objects)
+% Step 3: Moved object 9 -> 2
+% Step 3: Distribution: [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+% Step 4: Selected non-target node 2 (has 1 objects)
+% Step 4: Avoiding backtrack to node 9
+% Step 4: Moved object 2 -> 10
+% Step 4: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+% Step 5: Selected non-target node 4 (has 1 objects)
+% Step 5: Avoiding backtrack to node 13
+% Step 5: Moved object 4 -> 6
+% Step 5: Distribution: [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+% Step 6: Selected non-target node 10 (has 1 objects)
+% Step 6: Avoiding backtrack to node 2
+% Step 6: Moved object 10 -> 12
+% Step 6: Distribution: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1]
+% Step 7: Selected non-target node 6 (has 1 objects)
+% Step 7: Moved object 6 -> 4
+% Step 7: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1]
+% Step 8: Selected non-target node 4 (has 1 objects)
+% Step 8: Avoiding backtrack to node 6
+% Step 8: Moved object 4 -> 7
+% Step 8: Distribution: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1]
+% Step 9: Selected non-target node 12 (has 1 objects)
+% Step 9: Moved object 12 -> 10
+% Step 9: Distribution: [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+% Step 10: Selected non-target node 7 (has 1 objects)
+% Step 10: Moved object 7 -> 4
+% Step 10: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+% Step 11: Selected non-target node 14 (has 1 objects)
+% Step 11: Avoiding backtrack to node 3
+% Step 11: Moved object 14 -> 10
+% Step 11: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
+% Step 12: Selected non-target node 10 (has 2 objects)
+% Step 12: Avoiding backtrack to node 14
+% Step 12: Moved object 10 -> 11
+% Step 12: Distribution: [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
+% Step 13: Selected non-target node 10 (has 1 objects)
+% Step 13: Avoiding backtrack to node 14
+% Step 13: Moved object 10 -> 2
+% Step 13: Distribution: [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+% Step 14: Selected non-target node 11 (has 1 objects)
+% Step 14: Avoiding backtrack to node 10
+% Step 14: Moved object 11 -> 14
+% Step 14: Distribution: [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+% Step 15: Selected non-target node 4 (has 1 objects)
+% Step 15: Avoiding backtrack to node 7
+% Step 15: Moved object 4 -> 14
+% Step 15: Distribution: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+% Step 16: Selected non-target node 14 (has 2 objects)
+% Step 16: Avoiding backtrack to node 4
+% Step 16: Moved object 14 -> 10
+% Step 16: Distribution: [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+% Step 17: Selected non-target node 10 (has 1 objects)
+% Step 17: Avoiding backtrack to node 14
+% Step 17: Moved object 10 -> 12
+% Step 17: Distribution: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1]
+% Truck starting position: 11

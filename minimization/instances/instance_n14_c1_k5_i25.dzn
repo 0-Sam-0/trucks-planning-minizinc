@@ -1,0 +1,99 @@
+% instance_n14_c1_k5_i25.dzn
+% Generated instance for the Trucks problem
+% N=14, h=3, k=5
+
+% Number of nodes
+N = 14;
+
+% Number of objects
+h = 3;
+
+% Maximum plan length
+%k = 5;
+
+% Adjacency matrix (0-based internal, will be converted to 1-based)
+Adj = [|0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+      |0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0
+      |0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0
+      |1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0
+      |0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+      |0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+      |0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0
+      |0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0
+      |0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0
+      |0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      |];
+
+% Weights matrix (edge weights)
+% Weights = [|0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+%           |0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0
+%           |0, 0, 0, 4, 0, 0, 0, 2, 0, 0, 5, 0, 3, 0
+%           |1, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0
+%           |0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 0, 0
+%           |0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0
+%           |0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+%           |0, 5, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0
+%           |0, 5, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0
+%           |0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0
+%           |0, 0, 5, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0
+%           |0, 5, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |0, 0, 3, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+%           |];
+
+% Distance matrix
+Dist = [|0, 6, 5, 1, 13, 14, 10, 7, 9, 12, 10, 11, 6, 3
+      |6, 0, 7, 5, 7, 16, 6, 5, 5, 14, 12, 5, 10, 9
+      |5, 7, 0, 4, 10, 9, 5, 2, 4, 7, 5, 12, 3, 8
+      |1, 5, 4, 0, 12, 13, 9, 6, 8, 11, 9, 10, 5, 4
+      |13, 7, 10, 12, 0, 9, 13, 12, 12, 7, 5, 2, 13, 16
+      |14, 16, 9, 13, 9, 0, 14, 11, 13, 2, 4, 11, 12, 17
+      |10, 6, 5, 9, 13, 14, 0, 3, 1, 12, 10, 11, 8, 13
+      |7, 5, 2, 6, 12, 11, 3, 0, 2, 9, 7, 10, 5, 10
+      |9, 5, 4, 8, 12, 13, 1, 2, 0, 11, 9, 10, 7, 12
+      |12, 14, 7, 11, 7, 2, 12, 9, 11, 0, 2, 9, 10, 15
+      |10, 12, 5, 9, 5, 4, 10, 7, 9, 2, 0, 7, 8, 13
+      |11, 5, 12, 10, 2, 11, 11, 10, 10, 9, 7, 0, 15, 14
+      |6, 10, 3, 5, 13, 12, 8, 5, 7, 10, 8, 15, 0, 9
+      |3, 9, 8, 4, 16, 17, 13, 10, 12, 15, 13, 14, 9, 0
+      |];
+
+% Initial object distribution
+S_init = [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1];
+
+% Target nodes (1 if target, 0 otherwise)
+T = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0];
+
+% Initial truck position (1-based indexing)
+u = 9;
+
+% --- DEBUG TRACE ---
+% --- GENERATION TRACE (Backwards from Target) ---
+% Initial distribution (all on targets): [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]
+% Step 1: Selected target node 10 (has 1 objects)
+% Step 1: Moved object 10 -> 11
+% Step 1: Distribution: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
+% Step 2: Selected target node 1 (has 1 objects)
+% Step 2: Moved object 1 -> 14
+% Step 2: Distribution: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1]
+% Step 3: Selected target node 6 (has 1 objects)
+% Step 3: Selected non-target node 14 (has 1 objects)
+% Step 3: Selected non-target node 11 (has 1 objects)
+% Step 3: Avoiding backtrack to node 10
+% Step 3: Moved object 11 -> 5
+% Step 3: Distribution: [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]
+% Step 4: Selected target node 6 (has 1 objects)
+% Step 4: Selected non-target node 5 (has 1 objects)
+% Step 4: Avoiding backtrack to node 11
+% Step 4: Moved object 5 -> 12
+% Step 4: Distribution: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1]
+% Step 5: Selected target node 6 (has 1 objects)
+% Step 5: Selected non-target node 12 (has 1 objects)
+% Step 5: Avoiding backtrack to node 5
+% Step 5: Moved object 12 -> 2
+% Step 5: Distribution: [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
+% Truck starting position: 9
