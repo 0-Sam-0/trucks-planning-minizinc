@@ -1,0 +1,8 @@
+# Normalise line endings for text files, so the repository content does not
+# depend on the contributor's platform settings.
+* text=auto
+
+# Keep these byte-exact.
+*.png  binary
+*.pdf  binary
+*.xlsx binary

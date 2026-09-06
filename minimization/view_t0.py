@@ -68,11 +68,11 @@ class TrucksInitVisualizer:
             self.N = int(match.group(1))
             print(f"N (nodes): {self.N}")
         
-        # Extract h (horizon)
+        # Extract h (number of objects)
         match = re.search(r'h\s*=\s*(\d+)', content)
         if match:
             self.h = int(match.group(1))
-            print(f"h (horizon): {self.h}")
+            print(f"h (objects): {self.h}")
         
         # Extract adjacency matrix
         match = re.search(r'Adj\s*=\s*\[\|([^\]]+)\|\]', content, re.DOTALL)

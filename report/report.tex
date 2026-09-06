@@ -106,6 +106,14 @@
     % Academic Year
     {\large Academic Year 2025/2026 \par}
 
+    \vspace{0.8cm}
+    {\hypersetup{urlcolor=black}%
+     \href{https://github.com/0-Sam-0/trucks-planning-minizinc}%
+          {\small\emph{Models, benchmark data and errata --- revised after submission:}}\par
+     \vspace{0.15cm}
+     \href{https://github.com/0-Sam-0/trucks-planning-minizinc}%
+          {\small\texttt{github.com/0-Sam-0/trucks-planning-minizinc}}\par}
+
 \end{titlepage}
 
 % --- Table of Contents ---
@@ -221,7 +229,7 @@ Table~\ref{tab:base-solver-stats} summarizes the performance of all four solvers
 
 \begin{table}[H]
     \centering
-    \caption{Solver performance comparison on base problem (100 instances, 300s timeout)}
+    \caption{Solver performance comparison on base problem (100 instances, 300s timeout). Figures in parentheses are averages over the instances that solver solved.}
     \label{tab:base-solver-stats}
     \begin{tabular}{|l|c|c|c|c|}
         \hline
@@ -239,7 +247,7 @@ Chuffed emerges as the clear winner, solving all instances with an average runti
 
 For Gecode and HiGHs, the values in parentheses represent the average runtime computed only over successfully solved instances, excluding timeouts. This provides a fairer comparison of solver efficiency when the success rates differ significantly. Considering only successful instances, Chuffed (1.85s) is approximately 7 times faster than Gecode (13.36s) and over 13 times faster than HiGHs (24.93s). The non parenthesized values include timeouts counted as 300 seconds, resulting in higher overall averages of 53.49s for Gecode and 93.70s for HiGHs.
 
-Figure~\ref{fig:base-solver-comparison} visualizes the runtime distribution across all instances for each solver, including timeouts (shown as 300-second bars). The plot clearly shows Chuffed's consistently low runtimes and tight distribution, while Gecode and HiGHs exhibit much higher variance, median runtimes, and multiple timeout instances.
+Figure~\ref{fig:base-solver-comparison} visualizes the runtime distribution across all instances for each solver, including timeouts (marked above the 300-second line). The plot clearly shows Chuffed's consistently low runtimes and tight distribution, while Gecode and HiGHs exhibit much higher variance, median runtimes, and multiple timeout instances.
 
 \begin{figure}[H]
     \centering
@@ -259,11 +267,11 @@ Beyond solver selection, we evaluated the impact of custom search strategies on 
     \label{fig:base-strategies}
 \end{figure}
 
-The results reveal a somewhat surprising conclusion: Chuffed's default search strategy performs competitively with, and often outperforms, manually designed custom strategies. Strategies such as sequential-timestep ordering, position-first variable selection, and adaptive domain splitting show marginal differences from the default, with no strategy providing a consistent, significant improvement. This finding suggests that Chuffed's internal heuristics and lazy clause generation mechanism are already well-tuned for this problem structure. The solver automatically learns and exploits patterns during search, reducing the need for hand-crafted annotations. For practitioners, this means the default configuration is a robust starting point, eliminating the time-consuming process of strategy tuning.
+The results reveal a somewhat surprising conclusion: Chuffed's default search strategy beats every one of the manually designed alternatives. Sequential-timestep ordering, position-first variable selection and adaptive domain splitting are all slower than the default on the mean, by factors ranging from 1.3 to 12.2, and the best of the twelve improves on the default on only 7 of the 33 instances in this subset. This finding suggests that Chuffed's internal heuristics and lazy clause generation mechanism are already well-tuned for this problem structure. The solver automatically learns and exploits patterns during search, reducing the need for hand-crafted annotations. For practitioners, this means the default configuration is a robust starting point, eliminating the time-consuming process of strategy tuning.
 
 \subsubsection{Scaling Behavior}
 
-An analysis of runtimes across different graph sizes reveals that performance degrades as the problem scale increases. Instances with N=10 nodes typically solve in under 2 seconds with Chuffed, while instances with N=26 nodes can take up to 10-20 seconds. The timeout instances for Gecode and HiGHs are predominantly concentrated in the larger graph sizes (N $\ge$ 18), confirming that Chuffed's lazy clause generation provides a distinct advantage on harder, more structured instances.
+An analysis of runtimes across different graph sizes reveals that performance degrades as the problem scale increases. Instances with N=10 nodes typically solve in under 2 seconds with Chuffed, while instances with N=26 nodes average 2.57 seconds and never exceed 3.8 seconds; the slowest base instance overall, at 6.50 seconds, occurs at N=22. The timeout instances for Gecode and HiGHs are predominantly concentrated in the larger graph sizes (N $\ge$ 18), confirming that Chuffed's lazy clause generation provides a distinct advantage on harder, more structured instances.
 
 \section{Minimization problem}
 
@@ -321,6 +329,7 @@ The distance matrix is generated by the \texttt{create\_instances.py} script usi
 This precomputation ensures that distance lookups during solving are instantaneous, avoiding the need for on-the-fly pathfinding within the constraint model.
 
 \subsubsection{Two-phase approach}
+\label{sec:two-phase}
 
 The workflow for solving an instance combines both problems:
 \begin{enumerate}
@@ -328,6 +337,8 @@ The workflow for solving an instance combines both problems:
     \item \textbf{Phase 2 (MIN):} Run the minimization problem with $k = k_{min}$ to find the cost-optimal plan of that length
 \end{enumerate}
 This two-phase strategy is efficient because the Base phase quickly identifies the shortest possible plan, and the MIN phase refines it to find the best routing within that length.
+
+Phase 1 is always run with Chuffed, whichever solver is being measured in Phase 2. This keeps $k_{min}$ identical across runs, so every solver is given the same problem to optimize; it also means the Phase 1 time is the same work in every run and says nothing about the solver under test.
 
 \subsubsection{Solver configuration}
 
@@ -337,37 +348,44 @@ All four solvers (Chuffed, Gecode, HiGHs, OR-Tools) were tested on the minimizat
 
 The minimization problem introduces a significantly harder computational challenge: not only must the solver find a feasible plan, but it must also prove optimality of the cost function. Table~\ref{tab:min-solver-stats} summarizes the performance of all four solvers on the minimization benchmark.
 
-The SAT\_MIN column represents instances where the solver found at least one feasible solution with a cost. This includes both proven optimal solutions (Optimal column) and solutions that may be suboptimal cases where the solver found a solution but could not prove optimality within the time and memory limits. Instances outside SAT\_MIN (i.e., $100 - \text{SAT\_MIN}$) encountered memory errors (ERROR\_MIN) during the minimization phase, preventing the solver from finding any solution at all.
+The Solved column counts the instances for which the solver returned a plan with a cost, whether or not it went on to prove that cost optimal. The Optimal column counts the subset it did prove optimal, and is therefore never larger. On the remaining instances the solver returned nothing at all before the 300-second limit expired; whether it was still searching or had exhausted the available memory is not recorded. Every instance in the benchmark does admit a plan, so these are failures of the solver, not infeasible problems.
 
 \begin{table}[H]
     \centering
-    \caption{Solver performance on minimization problem (100 instances, 300s timeout per phase)}
+    \caption{Solver performance on minimization problem (100 instances, 300s timeout per phase). Figures in parentheses are averages over the instances that solver proved optimal.}
     \label{tab:min-solver-stats}
     \begin{tabular}{|l|c|c|c|c|c|}
         \hline
-        \textbf{Solver} & \textbf{Optimal} & \textbf{SAT\_MIN} & \textbf{Avg Cost} & \textbf{MIN (s)} \\
+        \textbf{Solver} & \textbf{Optimal} & \textbf{Solved} & \textbf{Avg Cost} & \textbf{Min. phase (s)} & \textbf{Total (s)} \\
         \hline
-        Chuffed         & 100/100          & 100/100           & 50.5              & 2.52             \\
-        Gecode          & 82/100           & 92/100            & 47.9              & 61.54 (9.17)     \\
-        HiGHs           & 67/100           & 91/100            & 50.3              & 102.83 (45.36)   \\
-        OR-Tools        & 92/100           & 92/100            & 47.5              & 39.63 (16.61)    \\
+        Chuffed         & 100/100          & 100/100           & 50.5              & 2.52             & 3.86               \\
+        Gecode          & 82/100           & 92/100            & 47.9              & 61.54 (9.17)     & 62.93 (10.20)      \\
+        HiGHs           & 67/100           & 91/100            & 50.3              & 128.89 (44.50)   & 130.19 (45.36)     \\
+        OR-Tools        & 92/100           & 92/100            & 47.5              & 38.33 (15.56)    & 39.63 (16.61)      \\
         \hline
     \end{tabular}
 \end{table}
 
-Chuffed again demonstrates exceptional performance, achieving 100\% proven optimality (100 SAT\_MIN, 100 optimal) with an average minimization phase runtime of just 2.52 seconds and no memory errors. This is significantly faster than all other solvers: approximately 3.6 times faster than Gecode's proven optimal instances average (9.17s), 18 times faster than HiGHs' proven optimal instances (45.36s), and 6.6 times faster than OR-Tools' proven optimal instances (16.61s). The optimization phase proves that Chuffed's lazy clause generation excels not only at finding feasible solutions but also at proving cost optimality efficiently.
+The Min. phase column reports the cost minimization alone; the Total column adds
+the satisfiability search that precedes it, which costs about 1.3 seconds per
+instance. As noted in Section~\ref{sec:two-phase}, that search is always run with
+Chuffed, so it contributes the same work to every row and only the Min. phase
+column compares the solvers. Failed instances are counted at the runtime measured for
+them. The analysis below refers to the minimization phase.
 
-Gecode found solutions for 92 instances but proved optimality for only 82, encountering 8 memory errors and 10 instances with potentially suboptimal solutions (where a solution was found but optimality could not be proven within the timeout). Its average MIN phase time is 61.54 seconds including failed instances (9.17 seconds for proven optimal instances), still nearly 4 times slower than Chuffed even on successful cases. HiGHs struggles significantly on this optimization problem, finding solutions for 91 instances but proving optimality for only 67, with 9 memory errors and 24 potentially suboptimal solutions. Its average MIN time is 102.83 seconds including failed instances (45.36 seconds for proven optimal instances). OR-Tools achieves a 92\% proven optimality rate (92 SAT\_MIN, all proven optimal, with 8 memory errors on remaining instances) with an average MIN time of 39.63 seconds including failed instances (16.61 seconds for proven optimal instances), but remains substantially slower than Chuffed.
+Chuffed again demonstrates exceptional performance, achieving 100\% proven optimality (100 solved, 100 optimal) with an average minimization phase runtime of just 2.52 seconds and no failures. This is significantly faster than all other solvers: approximately 3.6 times faster than Gecode's proven optimal instances average (9.17s), 17.7 times faster than HiGHs' proven optimal instances (44.50s), and 6.2 times faster than OR-Tools' proven optimal instances (15.56s). The optimization phase proves that Chuffed's lazy clause generation excels not only at finding feasible solutions but also at proving cost optimality efficiently.
+
+Gecode found solutions for 92 instances but proved optimality for only 82, failing to return anything on 8 and leaving 10 with potentially suboptimal solutions (where a solution was found but optimality could not be proven within the timeout). Its average MIN phase time is 61.54 seconds including failed instances (9.17 seconds for proven optimal instances), still nearly 4 times slower than Chuffed even on successful cases. HiGHs struggles significantly on this optimization problem, finding solutions for 91 instances but proving optimality for only 67, failing on 9 and leaving 24 potentially suboptimal solutions. Its average MIN time is 128.89 seconds including failed instances (44.50 seconds for proven optimal instances). OR-Tools achieves a 92\% proven optimality rate (92 solved, all proven optimal, having failed on the remaining 8) with an average MIN time of 38.33 seconds including failed instances (15.56 seconds for proven optimal instances), but remains substantially slower than Chuffed.
 
 \subsubsection{Cost Quality}
 
-An interesting observation is the variation in average costs across solvers. The solutions found by Chuffed have an average cost of 50.5, while Gecode's average is 47.9, HiGHs' is 50.3, and OR-Tools' is 47.5. This discrepancy arises because the averages are computed over the SAT\_MIN instances for each solver, different subsets of the 100 instances where a solution was found. Importantly, for Gecode and HiGHs, these averages include potentially suboptimal solutions, which may artificially lower or raise the average depending on the quality of non-proven solutions.
+An interesting observation is the variation in average costs across solvers. The solutions found by Chuffed have an average cost of 50.5, while Gecode's average is 47.9, HiGHs' is 50.3, and OR-Tools' is 47.5. This discrepancy arises because the averages are computed over the solved instances for each solver, different subsets of the 100 instances where a solution was found. Importantly, for Gecode and HiGHs, these averages include solutions that were never proven optimal. Any such solution is an upper bound on the true optimum, so it can only raise an average, never lower it.
 
-Gecode (92 SAT\_MIN instances, 82 proven optimal) and OR-Tools (92 SAT\_MIN instances, 92 proven optimal) both show lower average costs than Chuffed (47.9 and 47.5 vs 50.5). For OR-Tools, since all SAT\_MIN solutions are proven optimal, the comparison is direct: it solved a subset of instances (missing 8 due to memory errors) that happen to have inherently lower optimal costs. For Gecode, the average includes 10 potentially suboptimal solutions, which could bias the average downward if these non-proven solutions are actually suboptimal. HiGHs (91 SAT\_MIN instances, 67 optimal) has an average cost of 50.3, nearly identical to Chuffed's despite having 24 potentially suboptimal solutions. This suggests that either these non-proven solutions are close to optimal, or the distribution of instance difficulties balances out the effect.
+Gecode (92 solved instances, 82 proven optimal) and OR-Tools (92 solved instances, 92 proven optimal) both show lower average costs than Chuffed (47.9 and 47.5 vs 50.5). For OR-Tools, since every solution it found is proven optimal, the comparison is direct: it solved a subset of instances (missing the 8 it failed on) that happen to have inherently lower optimal costs. For Gecode, the average includes 10 solutions it never proved optimal, which can only push its figure up, so its true advantage on that subset is if anything larger than 47.9 suggests. Comparing those unproven solutions against the optima Chuffed proved on the same instances, 3 of Gecode's 10 are worse and 7 are equal, for a mean 6\% above the optimum. HiGHs (91 solved instances, 67 optimal) has an average cost of 50.3, nearly identical to Chuffed's, but its 24 unproven solutions are not close to optimal: 18 of them are strictly worse, and the mean is 16\% above the true optimum. Its apparent parity with Chuffed comes from the easier subset it managed to solve, not from the quality of its answers.
 
 \subsubsection{Runtime Breakdown}
 
-Figure~\ref{fig:min-solver-comparison} visualizes the runtime distribution for the minimization phase across all four solvers, including timeout instances (shown as 300-second bars).
+Figure~\ref{fig:min-solver-comparison} visualizes the runtime distribution for the minimization phase across all four solvers, including timeout instances (marked above the 300-second line).
 
 \begin{figure}[H]
     \centering
@@ -376,7 +394,7 @@ Figure~\ref{fig:min-solver-comparison} visualizes the runtime distribution for t
     \label{fig:min-solver-comparison}
 \end{figure}
 
-The plot highlights Chuffed's tight runtime distribution, with all instances solving in under 5 seconds and achieving proven optimality. Gecode encountered 8 memory errors and found 10 potentially suboptimal solutions where optimality could not be proven within the timeout (82\% proven optimal), OR-Tools had 8 memory errors with all SAT\_MIN instances achieving proven optimality (92\% proven optimal), and HiGHs shows 9 memory errors plus 24 potentially suboptimal solutions where optimality could not be proven (67\% proven optimal).
+The plot highlights Chuffed's tight runtime distribution, with 94 of 100 instances solving in under 5 seconds, a maximum of 83.44 seconds, and proven optimality throughout. Gecode failed on 8 instances and found 10 potentially suboptimal solutions where optimality could not be proven within the timeout (82\% proven optimal), OR-Tools failed on 8 with every solved instance achieving proven optimality (92\% proven optimal), and HiGHs failed on 9 and left 24 potentially suboptimal solutions where optimality could not be proven (67\% proven optimal).
 
 \subsubsection{Search Strategy Evaluation}
 
@@ -389,13 +407,13 @@ Similar to the base problem, we evaluated custom search strategies against Chuff
     \label{fig:min-strategies}
 \end{figure}
 
-Once again, the default search strategy proves highly effective, with no custom strategy providing a clear, consistent advantage. The optimization objective does not appear to benefit significantly from manual search annotations, further proving the effectiveness of Chuffed's internal heuristics.
+The outcome repeats, more starkly: all ten annotated strategies are slower than the default on the mean, by factors from 1.8 to 14.5, and the best of them wins on 5 of the 20 instances in this subset. The optimization objective does not benefit from manual search annotations here.
 
 \subsubsection{Minimization Phase Performance Summary}
 
-The minimization phase results clearly demonstrate Chuffed's superiority in proving cost optimality. With an average MIN time of 2.52 seconds and a 100\% proven optimality rate, Chuffed significantly outperforms all other solvers. When including failed instances, timeouts and memory errors counted as 300 seconds, Gecode averages 61.54 seconds (82\% proven optimal), HiGHs averages 102.83 seconds (67\% proven optimal), and OR-Tools averages 39.63 seconds (92\% proven optimal).
+The minimization phase results clearly demonstrate Chuffed's superiority in proving cost optimality. With an average MIN time of 2.52 seconds and a 100\% proven optimality rate, Chuffed significantly outperforms all other solvers. When including failed instances, counted at the runtime recorded for them, Gecode averages 61.54 seconds (82\% proven optimal), HiGHs averages 128.89 seconds (67\% proven optimal), and OR-Tools averages 38.33 seconds (92\% proven optimal).
 
-Even when comparing only instances where optimality was proven, which provides a more favorable view of the competing solvers, Chuffed remains the clear winner: Gecode's 9.17 seconds is 3.6× slower, HiGHs' 45.36 seconds is 18× slower, and OR-Tools' 16.61 seconds is 6.6× slower than Chuffed's 2.52 seconds. This performance advantage, combined with the perfect proven optimality rate and no memory errors, confirms that Chuffed's lazy clause generation mechanism is exceptionally well-suited for optimization problems with complex temporal and resource constraints.
+Even when comparing only instances where optimality was proven, which provides a more favorable view of the competing solvers, Chuffed remains the clear winner: Gecode's 9.17 seconds is 3.6× slower, HiGHs' 44.50 seconds is 17.7× slower, and OR-Tools' 15.56 seconds is 6.2× slower than Chuffed's 2.52 seconds. This performance advantage, combined with the perfect proven optimality rate and no failures, confirms that Chuffed's lazy clause generation mechanism is exceptionally well-suited for optimization problems with complex temporal and resource constraints.
 
 \section{Conclusions}
 
@@ -410,9 +428,9 @@ This project presented a comprehensive constraint programming approach to the Tr
 \paragraph{Solver Performance Comparison} The experimental results clearly delineate solver capabilities:
 \begin{itemize}
     \item \textbf{Chuffed:} 100\% success on BASE (1.85s avg), 100\% optimality on MIN (2.52s avg)
-    \item \textbf{OR-Tools:} 100\% success on BASE (3.96s avg), 92\% optimality on MIN (16.61s avg)
+    \item \textbf{OR-Tools:} 100\% success on BASE (3.96s avg), 92\% optimality on MIN (15.56s avg)
     \item \textbf{Gecode:} 86\% success on BASE (13.36s avg), 82\% optimality on MIN (9.17s avg)
-    \item \textbf{HiGHs:} 75\% success on BASE (24.93s avg), 67\% optimality on MIN (45.36s avg)
+    \item \textbf{HiGHs:} 75\% success on BASE (24.93s avg), 67\% optimality on MIN (44.50s avg)
 \end{itemize}
 Chuffed's superiority is particularly noticeable on harder instances and optimization problems, where lazy clause learning provides a clear advantage over traditional constraint propagation.
 

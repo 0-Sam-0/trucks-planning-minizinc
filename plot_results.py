@@ -97,8 +97,11 @@ def load_solver_data(base_path: Path, solver_name: str, problem_type: str) -> Op
     try:
         df = pd.read_csv(csv_path)
 
-        # Converti Time_Seconds a numerico
-        df['Time_Seconds'] = pd.to_numeric(df['Time_Seconds'], errors='coerce')
+        # Il confronto fra solver riguarda la fase di minimizzazione: la ricerca
+        # di k che la precede e' sempre svolta da Chuffed e non li distingue.
+        # Time_MIN_Sec e' presente solo nei file della minimizzazione.
+        colonna_tempo = 'Time_MIN_Sec' if 'Time_MIN_Sec' in df.columns else 'Time_Seconds'
+        df['Time_Seconds'] = pd.to_numeric(df[colonna_tempo], errors='coerce')
 
         # Aggiungi colonna indice numerico
         df['Instance_Num'] = df['Instance'].str.extract(r'i(\d+)').astype(int)
@@ -147,8 +150,11 @@ def load_strategy_data(base_path: Path, strategy_id: int, problem_type: str) -> 
         df['Instance_Num'] = df['Instance'].str.extract(r'i(\d+)').astype(int)
         df = df.sort_values('Instance_Num').reset_index(drop=True)
 
-        # Converti Time_Seconds a numerico
-        df['Time_Seconds'] = pd.to_numeric(df['Time_Seconds'], errors='coerce')
+        # Il confronto fra solver riguarda la fase di minimizzazione: la ricerca
+        # di k che la precede e' sempre svolta da Chuffed e non li distingue.
+        # Time_MIN_Sec e' presente solo nei file della minimizzazione.
+        colonna_tempo = 'Time_MIN_Sec' if 'Time_MIN_Sec' in df.columns else 'Time_Seconds'
+        df['Time_Seconds'] = pd.to_numeric(df[colonna_tempo], errors='coerce')
 
         # Standardizza colonna Success
         if problem_type == 'base':
